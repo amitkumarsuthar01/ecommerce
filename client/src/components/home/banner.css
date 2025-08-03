@@ -1,0 +1,12 @@
+.banner_img {
+  width: 100vw;
+  height: 280px;
+  object-fit:cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .banner_img {
+    height: 180px;
+  }
+}
