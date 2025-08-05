@@ -54,7 +54,7 @@ router.post("/register", async (req, res) => {
     }
 });
 
-// ✅ Login
+// ✅ Login user
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
@@ -65,27 +65,35 @@ router.post("/login", async (req, res) => {
     try {
         const userlogin = await User.findOne({ email });
 
-        if (userlogin) {
-            const isMatch = await bcrypt.compare(password, userlogin.password);
-
-            if (!isMatch) {
-                return res.status(400).json({ error: "Invalid credentials" });
-            }
-
-            const token = await userlogin.generatAuthtoken();
-            console.log("Generated token:", token);
-
-            res.cookie("eccomerce", token, {
-                expires: new Date(Date.now() + 2589000),
-                httpOnly: true,
-                secure: true,
-                sameSite: "None"
-            });
-
-            res.status(201).json(userlogin);
-        } else {
+        if (!userlogin) {
             return res.status(400).json({ error: "User not found" });
         }
+
+        const isMatch = await bcrypt.compare(password, userlogin.password);
+
+        if (!isMatch) {
+            return res.status(400).json({ error: "Invalid credentials" });
+        }
+
+        const token = await userlogin.generateAuthToken(); // ✅ Corrected spelling
+        console.log("Generated token:", token);
+
+        res.cookie("eccomerce", token, {
+            expires: new Date(Date.now() + 2589000000), // ~30 days
+            httpOnly: true,
+            secure: true,
+            sameSite: "None"
+        });
+
+        res.status(201).json({
+            message: "Login successful",
+            user: {
+                _id: userlogin._id,
+                fname: userlogin.fname,
+                email: userlogin.email,
+                mobile: userlogin.mobile
+            }
+        });
 
     } catch (error) {
         console.log("Login error:", error.message);
