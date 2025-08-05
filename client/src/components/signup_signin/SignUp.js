@@ -28,7 +28,7 @@ const Signup = () => {
         const { fname, email, mobile, password, cpassword } = udata;
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_BASE_URL}/register`, {
+            const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -37,10 +37,11 @@ const Signup = () => {
                 body: JSON.stringify({ fname, email, mobile, password, cpassword })
             });
 
-            const data = await res.json();
+            const text = await res.text();
+            const data = text ? JSON.parse(text) : {};
 
             if (res.status === 422 || !data) {
-                toast.error("Invalid Details 👎!");
+                toast.error(data?.error || "Invalid Details 👎!");
             } else {
                 setUdata({
                     fname: "", email: "", mobile: "", password: "", cpassword: ""
