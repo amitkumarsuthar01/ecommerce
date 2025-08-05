@@ -1,61 +1,51 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Logincontext } from '../context/Contextprovider';
 import { toast } from "react-toastify";
 
 const Sign_in = () => {
-
-    const { account, setAccount } = useContext(Logincontext);
+    const { setAccount } = useContext(Logincontext);
 
     const [logdata, setData] = useState({
         email: "",
         password: ""
     });
 
-    // console.log(data);
-
     const adddata = (e) => {
         const { name, value } = e.target;
-        // console.log(name, value);
-
-        setData((pre) => {
-            return {
-                ...pre,
-                [name]: value
-            }
-        })
+        setData((pre) => ({
+            ...pre,
+            [name]: value
+        }));
     };
 
     const senddata = async (e) => {
         e.preventDefault();
 
         const { email, password } = logdata;
-        // console.log(email);
+
         try {
-            const res = await fetch("/login", {
+            const res = await fetch(`${process.env.REACT_APP_BASE_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    email, password
-                })
+                credentials: "include", // to send cookies with request
+                body: JSON.stringify({ email, password })
             });
 
-
             const data = await res.json();
-            // console.log(data);
 
             if (res.status === 400 || !data) {
-                console.log("invalid details");
                 toast.error("Invalid Details 👎!");
             } else {
                 setAccount(data);
-                setData({ ...logdata, email: "", password: "" })
+                setData({ email: "", password: "" });
                 toast.success("Login Successfully done 😃!");
             }
         } catch (error) {
-            console.log("login page ka error" + error.message);
+            console.log("Login error: " + error.message);
+            toast.error("Server error. Try again later!");
         }
     };
 
@@ -71,30 +61,43 @@ const Sign_in = () => {
 
                         <div className="form_data">
                             <label htmlFor="email">Email</label>
-                            <input type="email" name="email"
+                            <input
+                                type="email"
+                                name="email"
                                 onChange={adddata}
                                 value={logdata.email}
-                                id="email" />
+                                id="email"
+                            />
                         </div>
                         <div className="form_data">
                             <label htmlFor="password">Password</label>
-                            <input type="password" name="password"
+                            <input
+                                type="password"
+                                name="password"
                                 onChange={adddata}
                                 value={logdata.password}
-                                id="password" placeholder="At least 6 characters" />
+                                id="password"
+                                placeholder="At least 6 characters"
+                            />
                         </div>
-                        <button type="submit" className="signin_btn" onClick={senddata}>Continue</button>
+                        <button
+                            type="submit"
+                            className="signin_btn"
+                            onClick={senddata}
+                        >
+                            Continue
+                        </button>
                     </form>
-                   
                 </div>
                 <div className="create_accountinfo">
                     <p>New to Amazon?</p>
-                    <button>  <NavLink to="/signup">Create your Amazon Account</NavLink></button>
+                    <button>
+                        <NavLink to="/signup">Create your Amazon Account</NavLink>
+                    </button>
                 </div>
             </div>
-
         </section>
-    )
-}
+    );
+};
 
-export default Sign_in
+export default Sign_in;

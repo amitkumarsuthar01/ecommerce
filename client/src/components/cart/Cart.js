@@ -7,14 +7,16 @@ import { Logincontext } from "../context/Contextprovider";
 
 const Cart = () => {
     const { account, setAccount } = useContext(Logincontext);
-    const { id } = useParams(); // get product ID from URL
-    const navigate = useNavigate(); // ✅ React Router v6 replacement for useHistory
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [inddata, setIndedata] = useState(null);
+
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Fetch product details
     const getinddata = async () => {
         try {
-            const res = await fetch(`/getproductsone/${id}`, {
+            const res = await fetch(`${BASE_URL}/getproductsone/${id}`, {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
@@ -25,8 +27,8 @@ const Cart = () => {
 
             const data = await res.json();
 
-            if (res.status !== 201) {
-                alert("No data available");
+            if (res.status !== 201 || !data) {
+                console.error("No product data available");
             } else {
                 setIndedata(data);
             }
@@ -37,13 +39,13 @@ const Cart = () => {
 
     useEffect(() => {
         const timeout = setTimeout(() => getinddata(), 1000);
-        return () => clearTimeout(timeout); // Cleanup
+        return () => clearTimeout(timeout);
     }, [id]);
 
     // Add item to cart
     const addtocart = async (id) => {
         try {
-            const res = await fetch(`/addcart/${id}`, {
+            const res = await fetch(`${BASE_URL}/addcart/${id}`, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -55,11 +57,11 @@ const Cart = () => {
 
             const data = await res.json();
 
-            if (res.status !== 201) {
-                alert("Error adding to cart");
+            if (res.status !== 201 || !data) {
+                console.error("Error adding to cart");
             } else {
                 setAccount(data);
-                navigate("/buynow"); // ✅ Replaced history.push
+                navigate("/buynow");
             }
         } catch (error) {
             console.error("Add to cart error:", error);

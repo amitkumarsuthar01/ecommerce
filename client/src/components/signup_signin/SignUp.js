@@ -1,5 +1,5 @@
 import { Divider } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { toast } from "react-toastify";
 import "./signup.css";
@@ -14,51 +14,44 @@ const Signup = () => {
         cpassword: ""
     });
 
-    // console.log(udata);
-
     const adddata = (e) => {
         const { name, value } = e.target;
-        // console.log(name,value);
-
-        setUdata((pre) => {
-            return {
-                ...pre,
-                [name]: value
-            }
-        })
+        setUdata((pre) => ({
+            ...pre,
+            [name]: value
+        }));
     };
 
     const senddata = async (e) => {
         e.preventDefault();
 
         const { fname, email, mobile, password, cpassword } = udata;
+
         try {
-            const res = await fetch("/register", {
+            const res = await fetch(`${process.env.REACT_APP_BASE_URL}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    fname, email, mobile, password, cpassword
-                })
+                credentials: "include",
+                body: JSON.stringify({ fname, email, mobile, password, cpassword })
             });
 
             const data = await res.json();
-            // console.log(data);
 
             if (res.status === 422 || !data) {
-                alert("Invalid Details 👎!");
+                toast.error("Invalid Details 👎!");
             } else {
                 setUdata({
-                    ...udata, fname: "", email: "",
-                    mobile: "", password: "", cpassword: ""
+                    fname: "", email: "", mobile: "", password: "", cpassword: ""
                 });
                 toast.success("Registration Successfully done 😃!");
             }
         } catch (error) {
-            console.log("front end ka catch error hai" + error.message);
+            console.log("Signup error: " + error.message);
+            toast.error("Server error. Try again later!");
         }
-    }
+    };
 
     return (
         <section>
@@ -71,40 +64,62 @@ const Signup = () => {
                         <h1>Create account</h1>
                         <div className="form_data">
                             <label htmlFor="name">Your name</label>
-                            <input type="text" name="fname"
+                            <input
+                                type="text"
+                                name="fname"
                                 onChange={adddata}
                                 value={udata.fname}
-                                id="name" />
+                                id="name"
+                            />
                         </div>
                         <div className="form_data">
-                            <label htmlFor="email">email</label>
-                            <input type="email" name="email"
+                            <label htmlFor="email">Email</label>
+                            <input
+                                type="email"
+                                name="email"
                                 onChange={adddata}
                                 value={udata.email}
-                                id="email" />
+                                id="email"
+                            />
                         </div>
                         <div className="form_data">
                             <label htmlFor="mobile">Mobile number</label>
-                            <input type="number" name="mobile"
+                            <input
+                                type="number"
+                                name="mobile"
                                 onChange={adddata}
                                 value={udata.mobile}
-                                id="mobile" />
+                                id="mobile"
+                            />
                         </div>
                         <div className="form_data">
                             <label htmlFor="password">Password</label>
-                            <input type="password" name="password"
+                            <input
+                                type="password"
+                                name="password"
                                 onChange={adddata}
                                 value={udata.password}
-                                id="password" placeholder="At least 6 characters" />
+                                id="password"
+                                placeholder="At least 6 characters"
+                            />
                         </div>
                         <div className="form_data">
                             <label htmlFor="passwordg">Password again</label>
-                            <input type="password" name="cpassword"
+                            <input
+                                type="password"
+                                name="cpassword"
                                 onChange={adddata}
                                 value={udata.cpassword}
-                                id="passwordg" />
+                                id="passwordg"
+                            />
                         </div>
-                        <button type="submit" className="signin_btn" onClick={senddata}>Continue</button>
+                        <button
+                            type="submit"
+                            className="signin_btn"
+                            onClick={senddata}
+                        >
+                            Continue
+                        </button>
 
                         <Divider />
 
@@ -114,10 +129,9 @@ const Signup = () => {
                         </div>
                     </form>
                 </div>
-                
             </div>
         </section>
-    )
-}
+    );
+};
 
 export default Signup;

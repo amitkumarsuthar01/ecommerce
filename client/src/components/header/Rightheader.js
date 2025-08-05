@@ -1,15 +1,42 @@
 import React, { useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Logincontext } from '../context/Contextprovider';
 import "./rightheader.css";
 import { Divider, Box } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { toast } from "react-toastify";
 
-const Rightheader = ({ userlog, logclose }) => {
-
+const Rightheader = ({ logclose }) => {
     const imgd = "/india.png";
-    const { account } = useContext(Logincontext);
+    const { account, setAccount } = useContext(Logincontext);
+    const navigate = useNavigate();
+
+    const logoutuser = async () => {
+        try {
+            const res = await fetch(`${process.env.REACT_APP_BASE_URL}/logout`, {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
+            });
+
+            const data = await res.json();
+            if (res.status === 201) {
+                setAccount(false);
+                toast.success("Logged out successfully!");
+                logclose(); // close drawer
+                navigate("/");
+            } else {
+                toast.error("Logout failed!");
+            }
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Something went wrong!");
+        }
+    };
 
     return (
         <Box className="rightheader">
@@ -55,7 +82,9 @@ const Rightheader = ({ userlog, logclose }) => {
                     account ? (
                         <Box className="flag" sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                             <LogoutIcon sx={{ fontSize: 18, mr: 1 }} />
-                            <h3 onClick={() => userlog()} style={{ cursor: "pointer", fontWeight: 500 }}>Log Out</h3>
+                            <h3 onClick={logoutuser} style={{ cursor: "pointer", fontWeight: 500 }}>
+                                Log Out
+                            </h3>
                         </Box>
                     ) : (
                         <NavLink to="/login">Sign in</NavLink>
@@ -64,6 +93,6 @@ const Rightheader = ({ userlog, logclose }) => {
             </Box>
         </Box>
     );
-}
+};
 
 export default Rightheader;

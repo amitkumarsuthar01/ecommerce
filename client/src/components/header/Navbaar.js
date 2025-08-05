@@ -46,7 +46,7 @@ const Navbaar = () => {
   }, []);
 
   const getdetailsvaliduser = async () => {
-    const res = await fetch("/validuser", {
+    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/validuser`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -62,7 +62,7 @@ const Navbaar = () => {
   };
 
   const logoutuser = async () => {
-    const res2 = await fetch("/logout", {
+    const res2 = await fetch(`${process.env.REACT_APP_BASE_URL}/logout`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -77,7 +77,7 @@ const Navbaar = () => {
       setAccount(false);
       setOpen(null);
       toast.success("User Logout 😃!");
-      navigate("/"); // ✅ Corrected
+      navigate("/");
     } else {
       toast.error("Logout failed");
     }
@@ -104,8 +104,7 @@ const Navbaar = () => {
           </Drawer>
           <div className="navlogo">
             <NavLink to="/">
-              {" "}
-              <img src="./amazon_PNG25.png" alt="logo" />{" "}
+              <img src="./amazon_PNG25.png" alt="logo" />
             </NavLink>
           </div>
           <div className="nav_searchbaar">

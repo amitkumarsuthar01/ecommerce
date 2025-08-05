@@ -1,13 +1,15 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { Logincontext } from '../context/Contextprovider';
 import { toast } from "react-toastify";
 
 const Option = ({ deletedata, get }) => {
     const { account, setAccount } = useContext(Logincontext);
 
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     const removedata = async (id) => {
         try {
-            const res = await fetch(`remove/${id}`, {
+            const res = await fetch(`${BASE_URL}/remove/${id}`, {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
@@ -20,15 +22,17 @@ const Option = ({ deletedata, get }) => {
 
             if (res.status === 400 || !data) {
                 console.log("Error occurred while removing item.");
+                toast.error("Failed to remove item.");
             } else {
                 setAccount(data);
-                get();
+                get(); // Refresh the cart
                 toast.success("Item removed from cart 😃!");
             }
         } catch (error) {
-            console.log(error);
+            console.error("Delete Error:", error);
+            toast.error("Something went wrong!");
         }
-    }
+    };
 
     return (
         <div className="add_remove_select" key={deletedata}>
@@ -43,6 +47,6 @@ const Option = ({ deletedata, get }) => {
             <p className="forremovemedia">See More like this</p>
         </div>
     );
-}
+};
 
 export default Option;
