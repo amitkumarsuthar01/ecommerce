@@ -33,9 +33,10 @@ const Navbaar = () => {
   const [liopen, setLiopen] = useState(true);
   const [dropen, setDropen] = useState(false);
   const { account, setAccount } = useContext(Logincontext);
-
   const { products } = useSelector((state) => state.getproductsdata);
   const dispatch = useDispatch();
+
+  const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
 
   useEffect(() => {
     dispatch(getProducts());
@@ -46,40 +47,52 @@ const Navbaar = () => {
   }, []);
 
   const getdetailsvaliduser = async () => {
-    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/validuser`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/validuser`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
-    const data = await res.json();
-    if (res.status === 201) {
-      setAccount(data);
+      if (!res.ok) throw new Error("Failed to fetch user");
+
+      const data = await res.json();
+
+      if (res.status === 201) {
+        setAccount(data);
+      }
+    } catch (err) {
+      console.error("Error in getdetailsvaliduser:", err.message);
     }
   };
 
   const logoutuser = async () => {
-    const res2 = await fetch(`${process.env.REACT_APP_BASE_URL}/logout`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/logout`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
-    const data2 = await res2.json();
+      const data = await res.json();
 
-    if (res2.status === 201) {
-      setAccount(false);
-      setOpen(null);
-      toast.success("User Logout 😃!");
-      navigate("/");
-    } else {
-      toast.error("Logout failed");
+      if (res.status === 201) {
+        setAccount(false);
+        setOpen(null);
+        toast.success("User Logout 😃!");
+        navigate("/");
+      } else {
+        toast.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Logout Error:", err.message);
+      toast.error("Server error during logout");
     }
   };
 
