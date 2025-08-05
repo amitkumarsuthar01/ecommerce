@@ -17,9 +17,9 @@ app.use(cookieParser(""));
 
 app.use(router);
 
-// app.get("/",(req,res)=>{
-//     res.send("your server is running");
-// });
+app.get("/",(req,res)=>{
+    res.send("your server is running");
+});
 
 //for deployment
 if(process.env.NODE_ENV == "production"){
